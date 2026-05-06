@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const router = express.Router();
 const recordsController = require("../controllers/recordsController");
+const glossaryController = require("../controllers/glossaryController");
 
 
 router.get("/", (req, res) => {
@@ -26,6 +27,9 @@ router.get(
   "/records/:category/:sub_category",
   recordsController.getRecordsByCategoryAndSubCategory,
 );
+router.get("/glossary/lang/:lang/letter/:letter", glossaryController.getGlossaryByLangAndLetter);
+router.get("/glossary/lang/:lang", glossaryController.getGlossaryByLang);
+router.get("/glossary/letter/:letter", glossaryController.getGlossaryByLetter);
 router.get("/records/:id", recordsController.getRecordById);
 
 module.exports = router;
