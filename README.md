@@ -1,6 +1,6 @@
 # Disability API
 
-REST API for accessing disability-related records from the SHSHM Portal database. Built with Node.js, Express, and Microsoft SQL Server.
+REST API for accessing disability-related records and glossary from the SHSHM Portal database. Built with Node.js, Express, and Microsoft SQL Server.
 
 ## Requirements
 
@@ -22,16 +22,16 @@ cp .env.example .env
 
 ## Environment Variables
 
-| Variable      | Description              | Default |
-|---------------|--------------------------|---------|
-| `DB_SERVER`   | SQL Server hostname/IP   |         |
-| `DB_DATABASE` | Database name            |         |
-| `DB_USER`     | Database user            |         |
-| `DB_PASSWORD` | Database password        |         |
-| `DB_PORT`     | SQL Server port          | `1433`  |
-| `PORT`        | API server port          | `3001`  |
-| `NODE_ENV`    | Environment              | `development` |
-| `ALLOWED_ORIGINS` | Comma-separated allowed CORS origins | `http://localhost:3000` |
+| Variable           | Description                          | Default                  |
+|--------------------|--------------------------------------|--------------------------|
+| `DB_SERVER`        | SQL Server hostname/IP               |                          |
+| `DB_DATABASE`      | Database name                        |                          |
+| `DB_USER`          | Database user                        |                          |
+| `DB_PASSWORD`      | Database password                    |                          |
+| `DB_PORT`          | SQL Server port                      | `1433`                   |
+| `PORT`             | API server port                      | `3001`                   |
+| `NODE_ENV`         | Environment                          | `development`            |
+| `ALLOWED_ORIGINS`  | Comma-separated allowed CORS origins | `http://localhost:3001`  |
 
 ## Running
 
@@ -53,14 +53,18 @@ pm2 start ecosystem.config.js --env production
 
 Base URL: `http://localhost:3001`
 
+---
+
 ### Records
+
+Table: `[shshmportal].[dbo].[files]`
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/api/records` | Get all records (up to 1000) |
 | `GET` | `/api/records/:id` | Get a single record by ID |
-| `GET` | `/api/records/category/:category` | Filter records by category |
-| `GET` | `/api/records/sub_category/:sub_category` | Filter records by sub-category |
+| `GET` | `/api/records/category/:category` | Filter by category |
+| `GET` | `/api/records/sub_category/:sub_category` | Filter by sub-category |
 | `GET` | `/api/records/:category/:sub_category` | Filter by category and sub-category |
 
 #### Record object
@@ -77,6 +81,38 @@ Base URL: `http://localhost:3001`
   "chartdata": "string"
 }
 ```
+
+---
+
+### Glossary
+
+Table: `[shshmportal].[dbo].[glossary]`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/glossary/lang/:lang/letter/:letter` | Filter by language and letter |
+| `GET` | `/api/glossary/lang/:lang` | Filter by language |
+| `GET` | `/api/glossary/letter/:letter` | Filter by letter |
+
+#### Parameters
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `lang` | Language code | `en`, `ka` |
+| `letter` | First letter of the term | `h`, `a` |
+
+#### Glossary object
+
+```json
+{
+  "ID": 17,
+  "lang": "en",
+  "letter": "h",
+  "text": "Hearing limitation — a person has some hearing..."
+}
+```
+
+---
 
 ### System
 
@@ -102,34 +138,35 @@ Base URL: `http://localhost:3001`
 }
 ```
 
+---
+
 ## Project Structure
 
 ```
 disability-api/
-├── app.js                   # Entry point, Express setup
-├── db.js                    # SQL Server connection pool
-├── logger.js                # Winston logger
-├── ecosystem.config.js      # PM2 config
+├── app.js                      # Entry point, Express setup
+├── db.js                       # SQL Server connection pool
+├── logger.js                   # Winston logger
+├── ecosystem.config.js         # PM2 config
 ├── routes/
-│   └── records.js           # Route definitions
+│   └── records.js              # All route definitions
 ├── controllers/
-│   └── recordsController.js # Query logic
+│   ├── recordsController.js    # Records query logic
+│   └── glossaryController.js   # Glossary query logic
 ├── middleware/
-│   ├── errorHandler.js      # Global error handler
-│   └── validate.js          # Request validation
-└── .env.example             # Environment template
+│   └── errorHandler.js         # Global error handler
+└── .env.example                # Environment template
 ```
 
 ## Dependencies
 
-| Package | Purpose |
-|---------|---------|
-| `express` | HTTP framework |
-| `mssql` | SQL Server client |
-| `helmet` | Security headers |
-| `cors` | Cross-origin resource sharing |
-| `dotenv-safe` | Environment variable validation |
-| `joi` | Input schema validation |
-| `express-rate-limit` | Rate limiting |
-| `winston` | Logging |
-| `nodemon` | Dev auto-reload |
+| Package              | Purpose                          |
+|----------------------|----------------------------------|
+| `express`            | HTTP framework                   |
+| `mssql`              | SQL Server client                |
+| `helmet`             | Security headers                 |
+| `cors`               | Cross-origin resource sharing    |
+| `dotenv-safe`        | Environment variable validation  |
+| `express-rate-limit` | Rate limiting (100 req / 15 min) |
+| `winston`            | Logging                          |
+| `nodemon`            | Dev auto-reload                  |
