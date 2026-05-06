@@ -3,9 +3,9 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const os = require("os");
+const logger = require("./logger");
 const errorHandler = require("./middleware/errorHandler");
 const { poolPromise } = require("./db");
-require("dotenv").config();
 
 const app = express();
 const recordsRoutes = require("./routes/records");
@@ -350,18 +350,18 @@ app.use(errorHandler);
 
 // Error handling for uncaught exceptions
 process.on("uncaughtException", (error) => {
-  console.error("Uncaught Exception:", error);
+  logger.error(`Uncaught Exception: ${error.stack}`);
   process.exit(1);
 });
 
 process.on("unhandledRejection", (error) => {
-  console.error("Unhandled Rejection:", error);
+  logger.error(`Unhandled Rejection: ${error.stack}`);
   process.exit(1);
 });
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(
+  logger.info(
     `Server is running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`,
   );
 });

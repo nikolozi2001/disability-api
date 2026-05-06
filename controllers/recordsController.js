@@ -23,8 +23,7 @@ const getAllRecords = async (req, res) => {
     logger.info("getAllRecords: Query executed successfully");
     res.json(result.recordset);
   } catch (err) {
-    logger.error(`Error in getAllRecords: ${err.message}`);
-    logger.error(err); // log the full error object
+    logger.error(`Error in getAllRecords: ${err.stack}`);
     res.status(500).json({ error: err.message });
   }
 };
@@ -44,8 +43,7 @@ const getRecordById = async (req, res) => {
 
     res.json(result.recordset[0]);
   } catch (err) {
-    logger.error(`Error in getRecordById: ${err.message}`);
-    logger.error(err); // log the full error object
+    logger.error(`Error in getRecordById: ${err.stack}`);
     res.status(500).json({ error: err.message });
   }
 };
@@ -65,8 +63,7 @@ const getRecordsByCategoryAndSubCategory = async (req, res) => {
 
     res.json(result.recordset);
   } catch (err) {
-    logger.error(`Error in getRecordsByCategoryAndSubCategory: ${err.message}`);
-    logger.error(err);
+    logger.error(`Error in getRecordsByCategoryAndSubCategory: ${err.stack}`);
     res.status(500).json({ error: err.message });
   }
 };
@@ -83,8 +80,7 @@ const getRecordsByCategory = async (req, res) => {
 
     res.json(result.recordset);
   } catch (err) {
-    logger.error(`Error in getRecordsByCategory: ${err.message}`);
-    logger.error(err);
+    logger.error(`Error in getRecordsByCategory: ${err.stack}`);
     res.status(500).json({ error: err.message });
   }
 };
@@ -101,8 +97,7 @@ const getRecordsBySubCategory = async (req, res) => {
 
     res.json(result.recordset);
   } catch (err) {
-    logger.error(`Error in getRecordsBySubCategory: ${err.message}`);
-    logger.error(err);
+    logger.error(`Error in getRecordsBySubCategory: ${err.stack}`);
     res.status(500).json({ error: err.message });
   }
 };
