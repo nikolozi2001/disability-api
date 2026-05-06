@@ -9,7 +9,7 @@ const config = {
   database: process.env.DB_DATABASE,
   port: parseInt(process.env.DB_PORT, 10),
   options: {
-    encrypt: false, // Disable encryption
+    encrypt: process.env.NODE_ENV === "production",
     enableArithAbort: true,
   },
 };

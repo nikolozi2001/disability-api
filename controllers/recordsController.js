@@ -1,9 +1,8 @@
 const { sql, poolPromise } = require("../db");
-const Joi = require("joi");
-const logger = require("../logger"); // import logger
+const logger = require("../logger");
 
 const FILES_SELECT_QUERY = `
-  SELECT TOP (1000)
+  SELECT 
     [ID],
     [category],
     [sub_category],
@@ -14,11 +13,6 @@ const FILES_SELECT_QUERY = `
     [chartdata]
   FROM [shshmportal].[dbo].[files]
 `;
-
-const recordSchema = Joi.object({
-  name: Joi.string().required(),
-  value: Joi.string().required(),
-});
 
 const getAllRecords = async (req, res) => {
   try {
@@ -126,7 +120,7 @@ const createRecord = async (req, res) => {
       .input("name", sql.NVarChar, name)
       .input("value", sql.NVarChar, value)
       .query(
-        "INSERT INTO records (name, value) OUTPUT INSERTED.id VALUES (@name, @value)"
+        "INSERT INTO records (name, value) OUTPUT INSERTED.id VALUES (@name, @value)",
       );
     res.status(201).json({ id: result.recordset[0].id, name, value });
   } catch (err) {

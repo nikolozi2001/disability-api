@@ -1,6 +1,6 @@
 module.exports = {
   apps: [{
-    name: 'nrg-api',
+    name: 'disability-api',
     script: 'app.js',
     instances: 'max',
     exec_mode: 'cluster',

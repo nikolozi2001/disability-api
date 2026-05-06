@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const os = require("os");
 const errorHandler = require("./middleware/errorHandler");
 const { poolPromise } = require("./db");
@@ -53,6 +54,15 @@ app.use(
 );
 
 app.use(express.json());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests, please try again later." },
+});
+app.use("/api", limiter);
 
 // Health check endpoint
 app.get("/health", async (req, res) => {
@@ -111,7 +121,7 @@ app.get("/", async (req, res) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NRG API - Documentation</title>
+  <title>Disability API - Documentation</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -230,8 +240,8 @@ app.get("/", async (req, res) => {
 <body>
   <div class="header">
     <div class="header-left">
-      <span style="font-size:32px">⚡</span>
-      <h1>NRG API</h1>
+      <span style="font-size:32px">📋</span>
+      <h1>Disability API</h1>
     </div>
     <span class="version">v1.0.0</span>
   </div>
@@ -272,343 +282,33 @@ app.get("/", async (req, res) => {
         <div class="category-header">
           <span class="category-icon">📋</span>
           <span>Records</span>
-          <span class="category-count">2 endpoints</span>
+          <span class="category-count">5 endpoints</span>
         </div>
         <div class="endpoints">
           <div class="endpoint">
             <span class="method method-get">GET</span>
             <span class="endpoint-path">/api/records</span>
-            <span class="endpoint-desc">Get all records</span>
+            <span class="endpoint-desc">Get all records (up to 1000)</span>
           </div>
           <div class="endpoint">
             <span class="method method-get">GET</span>
             <span class="endpoint-path">/api/records/<span class="param">:id</span></span>
             <span class="endpoint-desc">Get record by ID</span>
           </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">🏠</span>
-          <span>Households</span>
-          <span class="category-count">2 endpoints</span>
-        </div>
-        <div class="endpoints">
           <div class="endpoint">
             <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/households/<span class="param">:id</span></span>
-            <span class="endpoint-desc">Get household data by chart ID</span>
+            <span class="endpoint-path">/api/records/category/<span class="param">:category</span></span>
+            <span class="endpoint-desc">Filter records by category</span>
           </div>
           <div class="endpoint">
             <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/householdswithcodes/<span class="param">:id</span></span>
-            <span class="endpoint-desc">Get households with codes by chart ID</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">📦</span>
-          <span>Resources with Codes</span>
-          <span class="category-count">3 endpoints</span>
-        </div>
-        <div class="endpoints">
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/resourceswithcodes/years</span>
-            <span class="endpoint-desc">Get all available years</span>
+            <span class="endpoint-path">/api/records/sub_category/<span class="param">:sub_category</span></span>
+            <span class="endpoint-desc">Filter records by sub-category</span>
           </div>
           <div class="endpoint">
             <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/resourceswithcodes/<span class="param">:id</span></span>
-            <span class="endpoint-desc">Get resources with codes by chart ID</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/resource/<span class="param">:year</span>/<span class="param">:chart_id</span></span>
-            <span class="endpoint-desc">Get resource data by year and chart ID</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">⚡</span>
-          <span>Energy</span>
-          <span class="category-count">3 endpoints</span>
-        </div>
-        <div class="endpoints">
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/energyConsumption/<span class="param">:legend_code</span></span>
-            <span class="endpoint-desc">Get energy consumption by legend code</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/energyConsumptionBySector/<span class="param">:legend_code</span></span>
-            <span class="endpoint-desc">Get energy consumption by sector and legend code</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/energyProduction/<span class="param">:legend_code</span></span>
-            <span class="endpoint-desc">Get energy production by legend code</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">🪨</span>
-          <span>Coal Supply</span>
-          <span class="category-count">6 endpoints</span>
-        </div>
-        <div class="endpoints">
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/coalSupply/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get coal supply by year</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/coalSupply/code/<span class="param">:code</span>/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get coal supply by code and year</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/coalSupplyTons/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get coal supply in tons by year</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/coalSupplyTons/code/<span class="param">:code</span>/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get coal supply in tons by code and year</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/coalSupplyTonsOfOil/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get coal supply (tons of oil equivalent) by year</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/coalSupplyTonsOfOil/code/<span class="param">:code</span>/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get coal supply (tons of oil equivalent) by code and year</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">🗓️</span>
-          <span>Months</span>
-          <span class="category-count">4 endpoints</span>
-        </div>
-        <div class="endpoints">
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/monthes/<span class="param">:year</span>/<span class="param">:chart_id</span></span>
-            <span class="endpoint-desc">Get monthly data by year and chart ID</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/monthesAll/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get all monthly data by year</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/monthesAll/year/<span class="param">:year</span>/chart/<span class="param">:chart_id</span></span>
-            <span class="endpoint-desc">Get monthly data by year and chart ID</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">💰</span>
-          <span>Pricing</span>
-          <span class="category-count">2 endpoints</span>
-        </div>
-        <div class="endpoints">
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/gasPriceGel/<span class="param">:household</span></span>
-            <span class="endpoint-desc">Get gas price in GEL by household type</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/electricityPriceGel/<span class="param">:household</span></span>
-            <span class="endpoint-desc">Get electricity price in GEL by household type</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">🏭</span>
-          <span>Objects</span>
-          <span class="category-count">3 endpoints</span>
-        </div>
-        <div class="endpoints">
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/objects/<span class="param">:code</span></span>
-            <span class="endpoint-desc">Get object by code</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/objects/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get all objects by year</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/objects/year/<span class="param">:year</span>/sub_code/<span class="param">:sub_code</span></span>
-            <span class="endpoint-desc">Get objects by year and sub-code</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">🌿</span>
-          <span>Biofuel</span>
-          <span class="category-count">3 endpoints</span>
-        </div>
-        <div class="endpoints">
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/biofuel/<span class="param">:code</span></span>
-            <span class="endpoint-desc">Get biofuel data by code</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/biofuel/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get all biofuel data by year</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/biofuel/year/<span class="param">:year</span>/sub_code/<span class="param">:sub_code</span></span>
-            <span class="endpoint-desc">Get biofuel data by year and sub-code</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">🔀</span>
-          <span>Sankey</span>
-          <span class="category-count">3 endpoints</span>
-        </div>
-        <div class="endpoints">
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/sankey/chart_id/<span class="param">:chart_id</span></span>
-            <span class="endpoint-desc">Get Sankey data by chart ID</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/sankey/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get all Sankey data by year</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/sankey/year/<span class="param">:year</span>/chart_id/<span class="param">:chart_id</span></span>
-            <span class="endpoint-desc">Get Sankey data by year and chart ID</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">🛢️</span>
-          <span>Oil</span>
-          <span class="category-count">3 endpoints</span>
-        </div>
-        <div class="endpoints">
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/oil/<span class="param">:code</span></span>
-            <span class="endpoint-desc">Get oil data by code</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/oil/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get all oil data by year</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/oil/year/<span class="param">:year</span>/sub_code/<span class="param">:sub_code</span></span>
-            <span class="endpoint-desc">Get oil data by year and sub-code</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">💡</span>
-          <span>Electricity &amp; Heat</span>
-          <span class="category-count">3 endpoints</span>
-        </div>
-        <div class="endpoints">
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/electricityHeat/<span class="param">:code</span></span>
-            <span class="endpoint-desc">Get electricity/heat data by code</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/electricityHeat/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get all electricity/heat data by year</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/electricityHeat/year/<span class="param">:year</span>/sub_code/<span class="param">:sub_code</span></span>
-            <span class="endpoint-desc">Get electricity/heat data by year and sub-code</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">🔥</span>
-          <span>Natural Gas</span>
-          <span class="category-count">3 endpoints</span>
-        </div>
-        <div class="endpoints">
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/naturalGas/<span class="param">:code</span></span>
-            <span class="endpoint-desc">Get natural gas data by code</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/naturalGas/year/<span class="param">:year</span></span>
-            <span class="endpoint-desc">Get all natural gas data by year</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/naturalGas/year/<span class="param">:year</span>/sub_code/<span class="param">:sub_code</span></span>
-            <span class="endpoint-desc">Get natural gas data by year and sub-code</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="category">
-        <div class="category-header">
-          <span class="category-icon">📊</span>
-          <span>Main NRG Indicators</span>
-          <span class="category-count">2 endpoints</span>
-        </div>
-        <div class="endpoints">
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/mainNrgIndicators/<span class="param">:chartid</span></span>
-            <span class="endpoint-desc">Get main NRG indicators by chart ID</span>
-          </div>
-          <div class="endpoint">
-            <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/indicators/<span class="param">:name</span></span>
-            <span class="endpoint-desc">Get indicators by name</span>
+            <span class="endpoint-path">/api/records/<span class="param">:category</span>/<span class="param">:sub_category</span></span>
+            <span class="endpoint-desc">Filter records by category and sub-category</span>
           </div>
         </div>
       </div>
@@ -631,9 +331,9 @@ app.get("/", async (req, res) => {
   </div>
 
   <footer>
-    <p>&copy; ${currentYear} NRG API &middot; Built with Express.js</p>
+    <p>&copy; ${currentYear} Disability API &middot; Built with Express.js</p>
     <p style="margin-top: 8px;">
-      <a href="https://github.com/nikolozi2001/nrg-api" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+      <a href="https://github.com/nikolozi2001/disability-api" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
     </p>
   </footer>
 </body>
