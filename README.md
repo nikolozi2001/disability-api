@@ -1,254 +1,134 @@
-# NRG API
+# Disability API
 
-## Overview
+REST API for accessing disability-related records from the SHSHM Portal database. Built with Node.js, Express, and Microsoft SQL Server.
 
-This API provides endpoints to manage records, households, monthes, resource data, energy consumption, and indicators.
+## Requirements
 
-## Prerequisites
+- Node.js v18+
+- Microsoft SQL Server
+- npm
 
-- Node.js
-- SQL Server
+## Installation
 
-## Setup
+```bash
+npm install
+```
 
-1. Clone the repository:
+Copy the environment file and fill in your database credentials:
 
-   ```sh
-   git clone <repository-url>
-   cd nrg-api
-   ```
+```bash
+cp .env.example .env
+```
 
-2. Install dependencies:
+## Environment Variables
 
-   ```sh
-   npm install
-   ```
+| Variable      | Description              | Default |
+|---------------|--------------------------|---------|
+| `DB_SERVER`   | SQL Server hostname/IP   |         |
+| `DB_DATABASE` | Database name            |         |
+| `DB_USER`     | Database user            |         |
+| `DB_PASSWORD` | Database password        |         |
+| `DB_PORT`     | SQL Server port          | `1433`  |
+| `PORT`        | API server port          | `3001`  |
+| `NODE_ENV`    | Environment              | `development` |
 
-3. Configure the database connection:
-   Update the `.env` file with your SQL Server credentials.
+## Running
 
-## Running the Server
+```bash
+# Development (with auto-reload)
+npm run dev
 
-1. Install dependencies:
+# Production
+npm start
+```
 
-   ```sh
-   npm install
-   ```
+### PM2 (cluster mode)
 
-2. Start the server:
-   ```sh
-   npm start
-   ```
+```bash
+pm2 start ecosystem.config.js --env production
+```
 
-The server will run on `http://localhost:3000`.
+## API Endpoints
 
-## Endpoints
+Base URL: `http://localhost:3001`
 
 ### Records
 
-- **GET /api/records**: Get top 1000 records from `[shshmportal].[dbo].[files]`.
-- **GET /api/records/:id**: Get a record by `ID`.
-- **GET /api/records/category/:category**: Get records filtered only by `category`.
-- **GET /api/records/sub_category/:sub_category**: Get records filtered only by `sub_category`.
-- **GET /api/records/:category/:sub_category**: Get records filtered by both `category` and `sub_category`.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/records` | Get all records (up to 1000) |
+| `GET` | `/api/records/:id` | Get a single record by ID |
+| `GET` | `/api/records/category/:category` | Filter records by category |
+| `GET` | `/api/records/sub_category/:sub_category` | Filter records by sub-category |
+| `GET` | `/api/records/:category/:sub_category` | Filter by category and sub-category |
 
-### Households
-
-- **GET /api/households/:id**: Get household data by chart ID.
-
-### Monthes
-
-- **GET /api/monthes/:year/:chart_id**: Get month data by year and chart ID.
-
-### Monthes (All Data)
-
-- **GET /api/monthesAll/year/:year**: Get all months data for a specific year.
-- **GET /api/monthesAll/year/:year/chart/:chart_id**: Get months data for a specific year and chart ID.
-
-### Resource
-
-- **GET /api/resource/:year/:chart_id**: Get resource data by year and chart ID.
-
-### Households with Codes
-
-- **GET /api/householdswithcodes/:id**: Get households with codes data by chart ID.
-
-### Energy Consumption
-
-- **GET /api/energyConsumption/:legend_code**: Get energy consumption data by legend code.
-
-### Energy Consumption By Sector
-
-- **GET /api/energyConsumptionBySector/:legend_code**: Get energy consumption data by sector.
-
-### Energy Production Data
-
-- **GET /api/energyProduction/:legend_code**: Get energy Production data by legend code.
-
-### Indicators
-
-- **GET /api/indicators/:name**: Get indicator data by name.
-
-### Coal Supply Consumption (in Terajoules)
-
-- **GET /api/coalSupply/year/:year**: Get all coal supply consumption data for a specific year.
-- **GET /api/coalSupply/code/:code/year/:year**: Get coal supply consumption data for a specific code and year.
-
-### Coal Supply Consumption (in Tons)
-
-- **GET /api/coalSupplyTons/year/:year**: Get all coal supply consumption data in tons for a specific year.
-- **GET /api/coalSupplyTons/code/:code/year/:year**: Get coal supply consumption data in tons for a specific code and year.
-
-### Coal Supply Consumption (in Tons of Oil)
-
-- **GET /api/coalSupplyTonsOfOil/year/:year**: Get all coal supply consumption data in tons of oil for a specific year.
-- **GET /api/coalSupplyTonsOfOil/name/:name/year/:year**: Get coal supply consumption data in tons of oil for a specific name and year.
-
-## Example Requests
-
-### Get All Records
-
-```
-GET /api/records
-```
-
-### Get Record by Code
-
-```
-GET /api/records/1
-```
-
-### Get Records by Category
-
-```
-GET /api/records/category/health
-```
-
-### Get Records by Sub Category
-
-```
-GET /api/records/sub_category/statistics
-```
-
-### Get Records by Category and Sub Category
-
-```
-GET /api/records/health/statistics
-```
-
-### Get Household Data by Chart ID
-
-```
-GET /api/households/1
-```
-
-### Get Month Data by Year and Chart ID
-
-```
-GET /api/monthes/2018/1
-```
-
-### Get Resource Data by Year and Chart ID
-
-```
-GET /api/resource/2018/1
-```
-
-### Get Households with Codes Data by Chart ID
-
-```
-GET /api/householdswithcodes/1
-```
-
-### Get Energy Consumption Data by Legend Code
-
-```
-GET /api/energyConsumption/code123
-```
-
-### Get Energy Consumption Data by Legend Sector
-
-```
-GET /api/getEnergyConsumptionBySector/code123
-```
-
-### Get Indicator Data by Name
-
-```
-GET /api/indicators/indicator_name
-```
-
-### Get Coal Supply Consumption by Year (in Terajoules)
-
-```
-GET /api/coalSupply/year/2023
-```
-
-### Get Coal Supply Consumption by Code and Year (in Terajoules)
-
-```
-GET /api/coalSupply/code/ABC123/year/2023
-```
-
-### Get Coal Supply Consumption by Year (in Tons)
-
-```
-GET /api/coalSupplyTons/year/2023
-```
-
-### Get Coal Supply Consumption by Code and Year (in Tons)
-
-```
-GET /api/coalSupplyTons/code/ABC123/year/2023
-```
-
-### Get Coal Supply Consumption in Tons of Oil by Year
-
-```
-GET /api/coalSupplyTonsOfOil/year/2023
-```
-
-### Get Coal Supply Consumption in Tons of Oil by Name and Year
-
-```
-GET /api/coalSupplyTonsOfOil/name/ABC123/year/2023
-```
-
-## Error Handling
-
-If an error occurs, the API will return a JSON response with an error message and a status code of 500.
+#### Record object
 
 ```json
 {
-  "error": "Error message"
+  "ID": 1,
+  "category": "string",
+  "sub_category": "string",
+  "title_geo": "string",
+  "title_eng": "string",
+  "path_geo": "string",
+  "path_eng": "string",
+  "chartdata": "string"
+}
+```
+
+### System
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/health` | Health check — DB connectivity, uptime, system info |
+| `GET` | `/` | API dashboard (HTML) |
+| `GET` | `/api/` | Returns this README as plain text |
+
+#### Health response example
+
+```json
+{
+  "status": "healthy",
+  "timestamp": "2026-05-06T10:00:00.000Z",
+  "uptime": { "ms": 60000, "formatted": "1m 0s" },
+  "database": { "connected": true, "latency": 3 },
+  "system": {
+    "nodeVersion": "v20.0.0",
+    "platform": "win32",
+    "memory": { "used": 45, "total": 16384 }
+  }
 }
 ```
 
 ## Project Structure
 
 ```
-nrg-api/
-├── controllers/
-│   └── recordsController.js
-│   └── householdsController.js
-│   └── monthesController.js
-│   └── resourceController.js
-│   └── households_with_codesController.js
-│   └── energyConsumptionController.js
-│   └── energyConsumptionBySectorController.js
-│   └── energyProductionController.js
-│   └── indicatorsController.js
-│   └── coalSupplyController.js
-│   └── coalSupplyTonsController.js
-├── middleware/
-│   └── errorHandler.js
-│   └── validate.js
+disability-api/
+├── app.js                   # Entry point, Express setup
+├── db.js                    # SQL Server connection pool
+├── logger.js                # Winston logger
+├── ecosystem.config.js      # PM2 config
 ├── routes/
-│   └── records.js
-├── db.js
-├── logger.js
-├── app.js
-├── .env
-├── .env.example
-└── README.md
+│   └── records.js           # Route definitions
+├── controllers/
+│   └── recordsController.js # Query logic
+├── middleware/
+│   ├── errorHandler.js      # Global error handler
+│   └── validate.js          # Request validation
+└── .env.example             # Environment template
 ```
+
+## Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| `express` | HTTP framework |
+| `mssql` | SQL Server client |
+| `helmet` | Security headers |
+| `cors` | Cross-origin resource sharing |
+| `dotenv-safe` | Environment variable validation |
+| `joi` | Input schema validation |
+| `express-rate-limit` | Rate limiting |
+| `winston` | Logging |
+| `nodemon` | Dev auto-reload |
