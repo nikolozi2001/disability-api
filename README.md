@@ -31,6 +31,7 @@ cp .env.example .env
 | `DB_PORT`     | SQL Server port          | `1433`  |
 | `PORT`        | API server port          | `3001`  |
 | `NODE_ENV`    | Environment              | `development` |
+| `ALLOWED_ORIGINS` | Comma-separated allowed CORS origins | `http://localhost:3000` |
 
 ## Running
 

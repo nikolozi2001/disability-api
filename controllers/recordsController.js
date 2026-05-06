@@ -107,71 +107,10 @@ const getRecordsBySubCategory = async (req, res) => {
   }
 };
 
-const createRecord = async (req, res) => {
-  const { name, value } = req.body;
-  const { error } = recordSchema.validate(req.body);
-  if (error) {
-    return res.status(400).json({ error: error.details[0].message });
-  }
-  try {
-    const pool = await poolPromise;
-    const result = await pool
-      .request()
-      .input("name", sql.NVarChar, name)
-      .input("value", sql.NVarChar, value)
-      .query(
-        "INSERT INTO records (name, value) OUTPUT INSERTED.id VALUES (@name, @value)",
-      );
-    res.status(201).json({ id: result.recordset[0].id, name, value });
-  } catch (err) {
-    logger.error(`Error in createRecord: ${err.message}`);
-    logger.error(err); // log the full error object
-    res.status(500).json({ error: err.message });
-  }
-};
-
-const updateRecord = async (req, res) => {
-  const { id } = req.params;
-  const { name, value } = req.body;
-  try {
-    const pool = await poolPromise;
-    await pool
-      .request()
-      .input("id", sql.Int, id)
-      .input("name", sql.NVarChar, name)
-      .input("value", sql.NVarChar, value)
-      .query("UPDATE records SET name = @name, value = @value WHERE id = @id");
-    res.json({ id, name, value });
-  } catch (err) {
-    logger.error(`Error in updateRecord: ${err.message}`);
-    logger.error(err); // log the full error object
-    res.status(500).json({ error: err.message });
-  }
-};
-
-const deleteRecord = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const pool = await poolPromise;
-    await pool
-      .request()
-      .input("id", sql.Int, id)
-      .query("DELETE FROM records WHERE id = @id");
-    res.status(204).end();
-  } catch (err) {
-    logger.error(`Error in deleteRecord: ${err.message}`);
-    logger.error(err); // log the full error object
-    res.status(500).json({ error: err.message });
-  }
-};
-
 module.exports = {
   getAllRecords,
   getRecordById,
   getRecordsByCategoryAndSubCategory,
   getRecordsByCategory,
   getRecordsBySubCategory,
-  createRecord,
-  updateRecord,
-  deleteRecord,
 };

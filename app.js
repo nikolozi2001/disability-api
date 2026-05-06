@@ -33,7 +33,7 @@ app.use(
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
-        connectSrc: ["'self'", "https://energy-api.geostat.ge", "http://localhost:3000"], 
+        connectSrc: ["'self'"],
         imgSrc: ["'self'", "data:"],
       },
     },
@@ -41,13 +41,18 @@ app.use(
 );
 
 // CORS configuration
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+  : ["http://localhost:3001"];
+
 app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
-      return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`CORS: origin ${origin} not allowed`));
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   }),
