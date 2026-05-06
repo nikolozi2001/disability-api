@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const fs = require("fs");
+const path = require("path");
 const os = require("os");
 const logger = require("./logger");
 const errorHandler = require("./middleware/errorHandler");
@@ -371,8 +373,19 @@ app.get("/", async (req, res) => {
 </html>`);
 });
 
+app.get("/api", async (req, res) => {
+  try {
+    const data = await fs.promises.readFile(path.join(__dirname, "README.md"), "utf8");
+    res.type("text/plain").send(data);
+  } catch (err) {
+    res.status(500).json({ error: "Error reading README.md" });
+  }
+});
+
 app.use("/api", recordsRoutes);
 app.use("/api/glossary", glossaryRoutes);
+
+app.use((req, res) => res.status(404).json({ error: "Route not found." }));
 app.use(errorHandler);
 
 // Error handling for uncaught exceptions
