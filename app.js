@@ -234,7 +234,9 @@ app.get("/", async (req, res) => {
     .method-get { background: #4caf50; color: #fff; }
     .endpoint-path { font-family: 'Monaco', 'Consolas', monospace; color: #e0e0e0; font-size: 14px; }
     .endpoint-path .param { color: #ff9800; }
+    .endpoint-path .query { color: #64b5f6; }
     .endpoint-desc { color: #888; font-size: 13px; margin-left: auto; }
+    .query-note { font-size: 12px; color: #64b5f6; margin: 4px 0 8px 82px; }
     footer { text-align: center; padding: 40px; color: #666; border-top: 1px solid rgba(255,255,255,0.1); }
     footer a { color: #667eea; text-decoration: none; }
     footer a:hover { text-decoration: underline; }
@@ -295,30 +297,31 @@ app.get("/", async (req, res) => {
         <div class="endpoints">
           <div class="endpoint">
             <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/records</span>
+            <span class="endpoint-path">/api/records<span class="query">?lang=ka|en</span></span>
             <span class="endpoint-desc">Get all records (up to 1000)</span>
           </div>
           <div class="endpoint">
             <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/records/<span class="param">:id</span></span>
+            <span class="endpoint-path">/api/records/<span class="param">:id</span><span class="query">?lang=ka|en</span></span>
             <span class="endpoint-desc">Get record by ID</span>
           </div>
           <div class="endpoint">
             <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/records/category/<span class="param">:category</span></span>
-            <span class="endpoint-desc">Filter records by category</span>
+            <span class="endpoint-path">/api/records/category/<span class="param">:category</span><span class="query">?lang=ka|en</span></span>
+            <span class="endpoint-desc">Filter by category</span>
           </div>
           <div class="endpoint">
             <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/records/sub_category/<span class="param">:sub_category</span></span>
-            <span class="endpoint-desc">Filter records by sub-category</span>
+            <span class="endpoint-path">/api/records/sub_category/<span class="param">:sub_category</span><span class="query">?lang=ka|en</span></span>
+            <span class="endpoint-desc">Filter by sub-category</span>
           </div>
           <div class="endpoint">
             <span class="method method-get">GET</span>
-            <span class="endpoint-path">/api/records/<span class="param">:category</span>/<span class="param">:sub_category</span></span>
-            <span class="endpoint-desc">Filter records by category and sub-category</span>
+            <span class="endpoint-path">/api/records/<span class="param">:category</span>/<span class="param">:sub_category</span><span class="query">?lang=ka|en</span></span>
+            <span class="endpoint-desc">Filter by category and sub-category</span>
           </div>
         </div>
+        <p class="query-note">🔵 ?lang=ka → Georgian titles &amp; chartdata &nbsp;|&nbsp; ?lang=en → English titles &amp; chartdata</p>
       </div>
 
       <div class="category">
@@ -344,6 +347,7 @@ app.get("/", async (req, res) => {
             <span class="endpoint-desc">Filter by letter</span>
           </div>
         </div>
+        <p class="query-note">🔵 lang: <strong>ka</strong> = ქართული &nbsp;|&nbsp; <strong>en</strong> = English</p>
       </div>
 
       <div class="category">
