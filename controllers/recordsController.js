@@ -14,11 +14,22 @@ const FILES_SELECT_QUERY = `
   FROM [shshmportal].[dbo].[files]
 `;
 
+const parseChartdata = (record) => {
+  try {
+    return {
+      ...record,
+      chartdata: record.chartdata ? JSON.parse(record.chartdata) : null,
+    };
+  } catch {
+    return record;
+  }
+};
+
 const getAllRecords = async (req, res) => {
   try {
     const pool = await poolPromise;
     const result = await pool.request().query(FILES_SELECT_QUERY);
-    res.json(result.recordset);
+    res.json(result.recordset.map(parseChartdata));
   } catch (err) {
     logger.error(`Error in getAllRecords: ${err.stack}`);
     res.status(500).json({ error: err.message });
@@ -43,7 +54,7 @@ const getRecordById = async (req, res) => {
       return res.status(404).json({ error: "Record not found" });
     }
 
-    res.json(result.recordset[0]);
+    res.json(parseChartdata(result.recordset[0]));
   } catch (err) {
     logger.error(`Error in getRecordById: ${err.stack}`);
     res.status(500).json({ error: err.message });
@@ -63,7 +74,7 @@ const getRecordsByCategoryAndSubCategory = async (req, res) => {
         `${FILES_SELECT_QUERY} WHERE [category] = @category AND [sub_category] = @sub_category`,
       );
 
-    res.json(result.recordset);
+    res.json(result.recordset.map(parseChartdata));
   } catch (err) {
     logger.error(`Error in getRecordsByCategoryAndSubCategory: ${err.stack}`);
     res.status(500).json({ error: err.message });
@@ -80,7 +91,7 @@ const getRecordsByCategory = async (req, res) => {
       .input("category", sql.NVarChar, category)
       .query(`${FILES_SELECT_QUERY} WHERE [category] = @category`);
 
-    res.json(result.recordset);
+    res.json(result.recordset.map(parseChartdata));
   } catch (err) {
     logger.error(`Error in getRecordsByCategory: ${err.stack}`);
     res.status(500).json({ error: err.message });
@@ -97,7 +108,7 @@ const getRecordsBySubCategory = async (req, res) => {
       .input("sub_category", sql.NVarChar, sub_category)
       .query(`${FILES_SELECT_QUERY} WHERE [sub_category] = @sub_category`);
 
-    res.json(result.recordset);
+    res.json(result.recordset.map(parseChartdata));
   } catch (err) {
     logger.error(`Error in getRecordsBySubCategory: ${err.stack}`);
     res.status(500).json({ error: err.message });
