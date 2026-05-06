@@ -2,7 +2,7 @@ const { sql, poolPromise } = require("../db");
 const logger = require("../logger");
 
 const FILES_SELECT_QUERY = `
-  SELECT 
+  SELECT TOP (1000)
     [ID],
     [category],
     [sub_category],

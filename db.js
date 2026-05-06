@@ -24,6 +24,7 @@ const poolPromise = new sql.ConnectionPool(config)
     logger.error("Database Connection Failed! Bad Config: ", err);
     logger.error("Error details: ", err.message);
     logger.error("Stack trace: ", err.stack);
+    process.exit(1);
   });
 
 module.exports = {
