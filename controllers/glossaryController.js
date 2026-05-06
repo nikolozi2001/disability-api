@@ -4,14 +4,10 @@ const logger = require("../logger");
 const GLOSSARY_SELECT_QUERY = `
   SELECT TOP (1000)
     [ID],
-    [category],
-    [sub_category],
-    [title_geo],
-    [title_eng],
-    [path_geo],
-    [path_eng],
-    [chartdata]
-  FROM [shshmportal].[dbo].[files]
+    [lang],
+    [letter],
+    [text]
+  FROM [shshmportal].[dbo].[glossary]
 `;
 
 const getGlossaryByLangAndLetter = async (req, res) => {
@@ -23,9 +19,7 @@ const getGlossaryByLangAndLetter = async (req, res) => {
       .request()
       .input("lang", sql.NVarChar, lang)
       .input("letter", sql.NVarChar, letter)
-      .query(
-        `${GLOSSARY_SELECT_QUERY} WHERE [lang] = @lang AND [letter] = @letter`,
-      );
+      .query(`${GLOSSARY_SELECT_QUERY} WHERE [lang] = @lang AND [letter] = @letter`);
 
     res.json(result.recordset);
   } catch (err) {
