@@ -16,11 +16,8 @@ const FILES_SELECT_QUERY = `
 
 const getAllRecords = async (req, res) => {
   try {
-    logger.info("getAllRecords: Attempting to get all records");
     const pool = await poolPromise;
-    logger.info("getAllRecords: Connected to the database");
     const result = await pool.request().query(FILES_SELECT_QUERY);
-    logger.info("getAllRecords: Query executed successfully");
     res.json(result.recordset);
   } catch (err) {
     logger.error(`Error in getAllRecords: ${err.stack}`);
@@ -30,6 +27,11 @@ const getAllRecords = async (req, res) => {
 
 const getRecordById = async (req, res) => {
   const { id } = req.params;
+
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "ID must be a number." });
+  }
+
   try {
     const pool = await poolPromise;
     const result = await pool

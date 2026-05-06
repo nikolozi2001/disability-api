@@ -9,6 +9,7 @@ const { poolPromise } = require("./db");
 
 const app = express();
 const recordsRoutes = require("./routes/records");
+const glossaryRoutes = require("./routes/glossary");
 
 // Track server start time for uptime calculation
 const serverStartTime = Date.now();
@@ -371,6 +372,7 @@ app.get("/", async (req, res) => {
 });
 
 app.use("/api", recordsRoutes);
+app.use("/api/glossary", glossaryRoutes);
 app.use(errorHandler);
 
 // Error handling for uncaught exceptions
