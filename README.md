@@ -62,10 +62,14 @@ Table: `[shshmportal].[dbo].[files]`
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/api/records` | Get all records (up to 1000) |
+| `GET` | `/api/records?lang=ka` | Get records — Georgian titles/paths only |
+| `GET` | `/api/records?lang=en` | Get records — English titles/paths only |
 | `GET` | `/api/records/:id` | Get a single record by ID |
 | `GET` | `/api/records/category/:category` | Filter by category |
 | `GET` | `/api/records/sub_category/:sub_category` | Filter by sub-category |
 | `GET` | `/api/records/:category/:sub_category` | Filter by category and sub-category |
+
+> `lang` query parameter მუშაობს ყველა `/api/records` endpoint-ზე და `chartdata`-შიც შესაბამის ენაზე აბრუნებს სვეტებს.
 
 #### Record object
 
@@ -96,10 +100,10 @@ Table: `[shshmportal].[dbo].[glossary]`
 
 #### Parameters
 
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `lang` | Language code | `en`, `ka` |
-| `letter` | First letter of the term | `h`, `a` |
+| Parameter | Description | Values |
+|-----------|-------------|--------|
+| `lang` | Language code | `ka`, `en` |
+| `letter` | First letter of the term | `h`, `a`, `ბ` ... |
 
 #### Glossary object
 
