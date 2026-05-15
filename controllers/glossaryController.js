@@ -10,6 +10,8 @@ const GLOSSARY_SELECT_QUERY = `
   FROM [shshmportal].[dbo].[glossary]
 `;
 
+const SUPPORTED_GLOSSARY_LANGUAGES = ["ka", "en"];
+
 const getGlossaryByLangAndLetter = async (req, res) => {
   const { lang, letter } = req.params;
 
@@ -62,8 +64,65 @@ const getGlossaryByLetter = async (req, res) => {
   }
 };
 
+const getGlossaryDistinctLetters = async (req, res) => {
+  const requestedLang = req.params.lang || req.query.lang;
+  const normalizedLang = requestedLang ? String(requestedLang).toLowerCase() : null;
+
+  if (normalizedLang && !SUPPORTED_GLOSSARY_LANGUAGES.includes(normalizedLang)) {
+    return res.status(400).json({
+      error: "Invalid language. Supported values are 'ka' and 'en'.",
+    });
+  }
+
+  try {
+    const pool = await poolPromise;
+
+    if (normalizedLang) {
+      const result = await pool
+        .request()
+        .input("lang", sql.NVarChar, normalizedLang)
+        .query(`
+          SELECT DISTINCT [letter]
+          FROM [shshmportal].[dbo].[glossary]
+          WHERE [lang] = @lang
+          ORDER BY [letter]
+        `);
+
+      return res.json({
+        lang: normalizedLang,
+        letters: result.recordset.map((row) => row.letter),
+      });
+    }
+
+    const result = await pool
+      .request()
+      .query(`
+        SELECT [lang], [letter]
+        FROM (
+          SELECT DISTINCT [lang], [letter]
+          FROM [shshmportal].[dbo].[glossary]
+          WHERE [lang] IN ('ka', 'en')
+        ) AS distinct_letters
+        ORDER BY [lang], [letter]
+      `);
+
+    const groupedLetters = { ka: [], en: [] };
+    result.recordset.forEach((row) => {
+      if (groupedLetters[row.lang]) {
+        groupedLetters[row.lang].push(row.letter);
+      }
+    });
+
+    return res.json(groupedLetters);
+  } catch (err) {
+    logger.error(`Error in getGlossaryDistinctLetters: ${err.stack}`);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   getGlossaryByLangAndLetter,
   getGlossaryByLang,
   getGlossaryByLetter,
+  getGlossaryDistinctLetters,
 };

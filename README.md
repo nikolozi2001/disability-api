@@ -94,6 +94,8 @@ Table: `[shshmportal].[dbo].[glossary]`
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| `GET` | `/api/glossary/letters` | Get distinct letters for both `ka` and `en` |
+| `GET` | `/api/glossary/letters/:lang` | Get distinct letters for one language (`ka` or `en`) |
 | `GET` | `/api/glossary/lang/:lang/letter/:letter` | Filter by language and letter |
 | `GET` | `/api/glossary/lang/:lang` | Filter by language |
 | `GET` | `/api/glossary/letter/:letter` | Filter by letter |
