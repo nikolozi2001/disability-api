@@ -331,6 +331,16 @@ app.get("/", async (req, res) => {
           <span class="category-count">3 endpoints</span>
         </div>
         <div class="endpoints">
+         <div class="endpoint">
+            <span class="method method-get">GET</span>
+            <span class="endpoint-path">/api/glossary/letters/</span>
+            <span class="endpoint-desc">Filter by language and letter</span>
+          </div>
+         <div class="endpoint">
+            <span class="method method-get">GET</span>
+            <span class="endpoint-path">/api/glossary/letters/<span class="param">:lang</span></span>
+            <span class="endpoint-desc">Filter by language and letter</span>
+          </div>
           <div class="endpoint">
             <span class="method method-get">GET</span>
             <span class="endpoint-path">/api/glossary/lang/<span class="param">:lang</span>/letter/<span class="param">:letter</span></span>
