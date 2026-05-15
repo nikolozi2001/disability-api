@@ -12,6 +12,13 @@ const GLOSSARY_SELECT_QUERY = `
 
 const SUPPORTED_GLOSSARY_LANGUAGES = ["ka", "en"];
 
+const LANGUAGE_ALPHABETS = {
+  ka: [
+    "ა", "ბ", "გ", "დ", "ე", "ვ", "ზ", "თ", "ი", "კ", "ლ", "მ", "ნ", "ო", "პ", "ჟ", "რ", "ს", "ტ", "უ", "ფ", "ქ", "ღ", "ყ", "შ", "ჩ", "ც", "ძ", "წ", "ჭ", "ხ", "ჯ", "ჰ",
+  ],
+  en: "abcdefghijklmnopqrstuvwxyz".split(""),
+};
+
 const getGlossaryByLangAndLetter = async (req, res) => {
   const { lang, letter } = req.params;
 
@@ -32,18 +39,49 @@ const getGlossaryByLangAndLetter = async (req, res) => {
 
 const getGlossaryByLang = async (req, res) => {
   const { lang } = req.params;
+  const normalizedLang = String(lang).toLowerCase();
+
+  if (!SUPPORTED_GLOSSARY_LANGUAGES.includes(normalizedLang)) {
+    return res.status(400).json({
+      error: "Invalid language. Supported values are 'ka' and 'en'.",
+    });
+  }
 
   try {
     const pool = await poolPromise;
     const result = await pool
       .request()
-      .input("lang", sql.NVarChar, lang)
+      .input("lang", sql.NVarChar, normalizedLang)
       .query(`${GLOSSARY_SELECT_QUERY} WHERE [lang] = @lang`);
 
-    res.json(result.recordset);
+    const recordsByLetter = new Map();
+    result.recordset.forEach((row) => {
+      const letterKey = row.letter;
+      if (!recordsByLetter.has(letterKey)) {
+        recordsByLetter.set(letterKey, []);
+      }
+      recordsByLetter.get(letterKey).push(row);
+    });
+
+    const completeRecordset = [];
+    LANGUAGE_ALPHABETS[normalizedLang].forEach((letter) => {
+      const records = recordsByLetter.get(letter);
+      if (records && records.length > 0) {
+        completeRecordset.push(...records);
+      } else {
+        completeRecordset.push({
+          ID: null,
+          lang: normalizedLang,
+          letter,
+          text: "",
+        });
+      }
+    });
+
+    return res.json(completeRecordset);
   } catch (err) {
     logger.error(`Error in getGlossaryByLang: ${err.stack}`);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
